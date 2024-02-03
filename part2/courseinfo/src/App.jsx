@@ -1,14 +1,18 @@
 const Header = ({ course }) => <h1>{course}</h1>
 
-const Total = ({ sum }) => <p>Number of exercises {sum}</p>
+const Total = ({ sum }) => <p><b>total of {sum} exercises</b></p>
 
 const Part = ({ part }) =>
   <p>
     {part.name} {part.exercises}
   </p>
 
-const Content = ({ parts }) =>
-  <>
+const Content = ({ parts }) => {
+  const total = parts.reduce((s, p) => {
+    console.log('what is happening', s, p)
+    return s + p.exercises
+  }, 0)
+  return (<>
     <Part
       part={parts[0]}
     />
@@ -18,14 +22,15 @@ const Content = ({ parts }) =>
     <Part
       part={parts[2]}
     />
-  </>
+    <Total sum={total} />
+  </>)
+}
 const Course = ({ course }) => {
   return (
     <div>
       <Header course={course.name} />
       <Content parts={course.parts} />
     </div>
-
   )
 }
 
