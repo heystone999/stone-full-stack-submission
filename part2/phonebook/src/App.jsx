@@ -46,8 +46,33 @@ const Persons = ({ persons, filter, deletePerson }) => {
 }
 
 
+const Notification = ({ successMessage }) => {
+  const successMessageStyle = {
+    color: "green",
+    background: "lightgrey",
+    fontSize: "20px",
+    borderStyle: "solid",
+    borderRadius: "5px",
+    padding: "10px",
+    marginBottom: "10px"
+  }
+  if (!successMessage) {
+    return null
+  }
+  return (
+    <div style={successMessageStyle}>
+      {successMessage}
+    </div>
+  )
+}
+
+
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [filter, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     personService
@@ -57,10 +82,6 @@ const App = () => {
       })
   }, [])
 
-
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [filter, setFilter] = useState('')
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
@@ -89,6 +110,8 @@ const App = () => {
             setPersons(persons.map(person => (
               person.id !== existingPerson.id ? person : returnedPerson
             )))
+            setSuccessMessage(`Added ${newName}`)
+            setTimeout(() => { setSuccessMessage(null) }, 5000)
             setNewName('')
             setNewNumber('')
           })
@@ -104,6 +127,8 @@ const App = () => {
         .create(newPerson)
         .then(returnedPerson => {
           setPersons([...persons, returnedPerson])
+          setSuccessMessage(`Added ${returnedPerson.name}`)
+          setTimeout(() => { setSuccessMessage(null) }, 5000)
           setNewName('')
           setNewNumber('')
         })
@@ -132,6 +157,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification successMessage={successMessage} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>Add a new</h2>
       <PersonForm
