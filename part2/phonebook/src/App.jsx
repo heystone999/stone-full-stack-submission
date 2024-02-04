@@ -77,26 +77,41 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
-    if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      setNewNumber('')
-      return
+    const existingPerson = persons.find(person => person.name === newName)
+
+    if (existingPerson) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const updatePerson = { ...existingPerson, number: newNumber }
+
+        personService
+          .update(existingPerson.id, updatePerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => (
+              person.id !== existingPerson.id ? person : returnedPerson
+            )))
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(error => {
+            console.error('Error: ', error)
+            alert('update failed')
+          })
+      }
+    } else {
+      const newPerson = { name: newName, number: newNumber }
+
+      personService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons([...persons, returnedPerson])
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(error => {
+          console.error('Error: ', error);
+          alert('add failed')
+        })
     }
-
-    const newPerson = { name: newName, number: newNumber }
-
-    personService
-      .create(newPerson)
-      .then(returnedPerson => {
-        setPersons([...persons, returnedPerson])
-        setNewName('')
-        setNewNumber('')
-      })
-      .catch(error => {
-        console.error('Error: ', error);
-        alert('add failed')
-      })
   }
 
   const deletePerson = (id, name) => {
