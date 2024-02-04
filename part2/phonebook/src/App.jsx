@@ -82,9 +82,18 @@ const App = () => {
     }
 
     const newPerson = { name: newName, number: newNumber }
-    setPersons([...persons, newPerson])
-    setNewName('')
-    setNewNumber('')
+
+    axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => {
+        setPersons([...persons, response.data])
+        setNewName('')
+        setNewNumber('')
+      })
+      .catch(error => {
+        console.error('Error: ', error);
+        alert('add failed')
+      })
   }
 
   return (
