@@ -46,9 +46,9 @@ const Persons = ({ persons, filter, deletePerson }) => {
 }
 
 
-const Notification = ({ successMessage }) => {
-  const successMessageStyle = {
-    color: "green",
+const Notification = ({ type, message }) => {
+  const messageStyle = {
+    color: type === "success" ? "green" : "red",
     background: "lightgrey",
     fontSize: "20px",
     borderStyle: "solid",
@@ -56,12 +56,12 @@ const Notification = ({ successMessage }) => {
     padding: "10px",
     marginBottom: "10px"
   }
-  if (!successMessage) {
+  if (!message) {
     return null
   }
   return (
-    <div style={successMessageStyle}>
-      {successMessage}
+    <div style={messageStyle}>
+      {message}
     </div>
   )
 }
@@ -73,6 +73,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     personService
@@ -117,7 +118,9 @@ const App = () => {
           })
           .catch(error => {
             console.error('Error: ', error)
-            alert('update failed')
+            // alert('update failed')
+            setErrorMessage(`Information of ${newName} has already been removed from server`)
+            setTimeout(() => { setErrorMessage(null) }, 5000)
           })
       }
     } else {
@@ -134,7 +137,9 @@ const App = () => {
         })
         .catch(error => {
           console.error('Error: ', error);
-          alert('add failed')
+          // alert('add failed')
+          setErrorMessage(`Information of ${newName} has already been removed from server`)
+          setTimeout(() => { setErrorMessage(null) }, 5000)
         })
     }
   }
@@ -157,7 +162,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification successMessage={successMessage} />
+      {successMessage && <Notification type="success" message={successMessage} />}
+      {errorMessage && <Notification type="error" message={errorMessage} />}
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>Add a new</h2>
       <PersonForm
