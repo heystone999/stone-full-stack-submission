@@ -118,8 +118,7 @@ const App = () => {
           })
           .catch(error => {
             console.error('Error: ', error)
-            // alert('update failed')
-            setErrorMessage(`Information of ${newName} has already been removed from server`)
+            setErrorMessage(error.response.data.error)
             setTimeout(() => { setErrorMessage(null) }, 5000)
           })
       }
@@ -136,9 +135,8 @@ const App = () => {
           setNewNumber('')
         })
         .catch(error => {
-          console.error('Error: ', error);
-          // alert('add failed')
-          setErrorMessage(`Information of ${newName} has already been removed from server`)
+          console.error('Error: ', error)
+          setErrorMessage(error.response.data.error)
           setTimeout(() => { setErrorMessage(null) }, 5000)
         })
     }
