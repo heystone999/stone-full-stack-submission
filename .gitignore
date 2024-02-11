@@ -60,7 +60,6 @@ dist-ssr
 /learning
 .eslintrc.cjs
 package-lock.json
-package.json
 public
 index.html
 vite.config.js
