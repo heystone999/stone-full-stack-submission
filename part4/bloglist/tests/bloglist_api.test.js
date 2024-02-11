@@ -39,6 +39,29 @@ describe('GET /api/blogs', () => {
   })
 })
 
+describe('POST /api/blogs', () => {
+  test('a new blog post can be created successfully', async () => {
+    const newBlog = {
+      title: "win",
+      author: "ComradeProgrammer",
+      url: "https://worldismine.win/",
+      likes: 2
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('COntent-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
+    const urls = blogsAtEnd.map(r => r.url)
+    expect(urls).toContain(newBlog.url)
+  })
+})
+
 
 afterAll(async () => {
   await mongoose.connection.close()
