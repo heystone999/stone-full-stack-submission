@@ -111,6 +111,29 @@ describe('DELETE /api/blogs/id', () => {
   })
 })
 
+describe('PUT /api/blogs/id', () => {
+  test('succeeds with statuscode 204 if blog exists', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const blog = {
+      ...blogToUpdate,
+      likes: blogToUpdate.likes + 1
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(blog)
+      .expect(200)
+      .expect('COntent-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+    expect(updatedBlog.likes).toBe(blogToUpdate.likes + 1)
+  })
+})
+
 
 afterAll(async () => {
   await mongoose.connection.close()
