@@ -60,6 +60,25 @@ describe('POST /api/blogs', () => {
     const urls = blogsAtEnd.map(r => r.url)
     expect(urls).toContain(newBlog.url)
   })
+
+
+  test('missing likes property defaults to 0', async () => {
+    const newBlog = {
+      title: "missing likes",
+      author: "stone",
+      url: "http://url.com"
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('COntent-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const savedBlog = response.body.find(blog => blog.title === newBlog.title)
+    expect(savedBlog.likes).toBe(0)
+  })
 })
 
 
