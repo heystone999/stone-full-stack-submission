@@ -79,6 +79,19 @@ describe('POST /api/blogs', () => {
     const savedBlog = response.body.find(blog => blog.title === newBlog.title)
     expect(savedBlog.likes).toBe(0)
   })
+
+
+  test('missing title or url should return 400 Bad Request', async () => {
+    const newBlog = {
+      author: "stone",
+      likes: 10
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
 })
 
 
