@@ -102,19 +102,40 @@ describe('POST /api/blogs', () => {
 })
 
 describe('DELETE /api/blogs/id', () => {
-  test('succeeds with statuscode 204 if blog exists', async () => {
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
+  let blogId
+  beforeEach(async () => {
+    await Blog.deleteMany({})
 
+    const newBlog = {
+      title: "win",
+      author: "ComradeProgrammer",
+      url: "https://worldismine.win/",
+      likes: 2
+    }
+    const response = await api
+      .post('/api/blogs')
+      .set('Authorization', authHeader)
+      .send(newBlog)
+    blogId = response.body.id
+  })
+
+  test('succeeds with statuscode 204 by the creator', async () => {
     await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
+      .delete(`/api/blogs/${blogId}`)
+      .set('Authorization', authHeader)
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+    expect(blogsAtEnd).toHaveLength(0)
+  })
 
-    const ids = blogsAtEnd.map(r => r.id)
-    expect(ids).not.toContain(blogToDelete.id)
+  test('fails with statuscode 401 without valid auth header', async () => {
+    await api
+      .delete(`/api/blogs/${blogId}`)
+      .expect(401)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(1)
   })
 })
 
