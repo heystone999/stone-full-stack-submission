@@ -22,7 +22,7 @@ describe('GET /api/blogs', () => {
     await api
       .get('/api/blogs')
       .expect(200)
-      .expect('COntent-Type', /application\/json/)
+      .expect('Content-Type', /application\/json/)
   }, 100000)
 
   test('all notes are returned', async () => {
@@ -52,7 +52,7 @@ describe('POST /api/blogs', () => {
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
-      .expect('COntent-Type', /application\/json/)
+      .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
@@ -73,7 +73,7 @@ describe('POST /api/blogs', () => {
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
-      .expect('COntent-Type', /application\/json/)
+      .expect('Content-Type', /application\/json/)
 
     const response = await api.get('/api/blogs')
     const savedBlog = response.body.find(blog => blog.title === newBlog.title)
@@ -125,7 +125,7 @@ describe('PUT /api/blogs/id', () => {
       .put(`/api/blogs/${blogToUpdate.id}`)
       .send(blog)
       .expect(200)
-      .expect('COntent-Type', /application\/json/)
+      .expect('Cntent-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
