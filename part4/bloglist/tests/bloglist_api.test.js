@@ -5,15 +5,19 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 
+let authHeader
 beforeEach(async () => {
-  await Blog.deleteMany({})
+  await User.deleteMany({})
+  const user = helper.initialUsers[0]
+  await api.post('/api/users').send(user)
+  const response = await api.post('/api/login').send(user)
+  authHeader = `Bearer ${response.body.token}`
 
-  for (let blog of helper.initialBlogs) {
-    let blogObj = new Blog(blog)
-    await blogObj.save()
-  }
+  await Blog.deleteMany({})
+  await Blog.insertMany(helper.initialBlogs)
 })
 
 
@@ -50,6 +54,7 @@ describe('POST /api/blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', authHeader)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -71,6 +76,7 @@ describe('POST /api/blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', authHeader)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -89,6 +95,7 @@ describe('POST /api/blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', authHeader)
       .send(newBlog)
       .expect(400)
   })
