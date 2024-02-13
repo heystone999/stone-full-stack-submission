@@ -125,7 +125,7 @@ describe('PUT /api/blogs/id', () => {
       .put(`/api/blogs/${blogToUpdate.id}`)
       .send(blog)
       .expect(200)
-      .expect('Cntent-Type', /application\/json/)
+      .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
