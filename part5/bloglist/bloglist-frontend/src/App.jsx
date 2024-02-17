@@ -3,16 +3,35 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-
+const Notification = ({ message }) => {
+  if (!message) {
+    return null
+  }
+  const notificationStyle = {
+    color: message.type === 'success' ? 'green' : 'red',
+    backgroundColor: 'lightgrey',
+    padding: '10px',
+    marginBottom: '10px',
+    border: message.type === 'success' ? '2px solid green' : '2px solid red',
+    borderRadius: '5px'
+  }
+  return (
+    <div style={notificationStyle}>
+      {message.content}
+    </div>
+  )
+}
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const [notification, setNotification] = useState(null)
+
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -43,9 +62,9 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setNotification({ content: 'wrong username or password', type: 'error' })
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification(null)
       }, 5000)
     }
   }
@@ -57,17 +76,27 @@ const App = () => {
 
   const handleCreateBlog = async (event) => {
     event.preventDefault()
-    const blogObj = {
-      title: title,
-      author: author,
-      url: url
+    try {
+      const blogObj = {
+        title: title,
+        author: author,
+        url: url
+      }
+      const newBlog = await blogService.create(blogObj)
+      setBlogs(blogs.concat(newBlog))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      setNotification({ content: `a new blog ${newBlog.title} by ${newBlog.author} added`, type: 'success' })
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000)
+    } catch (exception) {
+      setNotification({ content: 'Failed to create a new blog', type: 'error' });
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
     }
-
-    const newBlog = await blogService.create(blogObj)
-    setBlogs(blogs.concat(newBlog))
-    setTitle('')
-    setAuthor('')
-    setUrl('')
   }
 
   const loginForm = () => (
@@ -116,6 +145,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notification} />
       {user === null ? loginForm() : blogList()}
     </div>
   )
